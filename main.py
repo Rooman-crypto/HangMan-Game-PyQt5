@@ -92,39 +92,59 @@ class MainWindow(QMainWindow):
 
     def get_word(self):
         self.used_letters = []
+        self.word = "alabama"
         self.answer = ["_"] * len(self.word)
         candidate_letters = ""
+        candidate_letters_len = []
         for a in self.word:
             if a not in candidate_letters:
                 candidate_letters += a
-        if len(self.word) <= 3:
-            self.word_label.setText(" ".join(self.answer))
-            return
+                candidate_letters_len.append(self.word.count(a))
         if 3 <= len(self.word) <= 5:
             reveal = 1
         elif 6 <= len(self.word) <= 9:
             reveal = 2
         else:
             reveal = 3
-        reveal = min(reveal, len(candidate_letters))
-        allowed_letter_count = []
-        for i in candidate_letters:
-            allowed_letter_count.append(self.word.count(i))
-        if max(allowed_letter_count) >= 4:
-            reveal = 2
-        for _ in range(reveal):
-            revealed_letter = random.choice(candidate_letters)
-            if min(allowed_letter_count) <= 2:
-                while self.word.count(revealed_letter) >= 3:
+        revealed_letters_count = 0
+        if reveal:
+            if len(self.word) > 3:
+                while revealed_letters_count < reveal:
                     revealed_letter = random.choice(candidate_letters)
-            else:
-                return
-            candidate_letters = candidate_letters.replace(revealed_letter, "")
-            for index, letter in enumerate(self.word):
-                if letter == revealed_letter:
-                    self.answer[index] = revealed_letter
-                    self.used_letters.append(revealed_letter)
+                    if self.word.count(revealed_letter) > reveal:
+                        for index, letter in enumerate(self.word):
+                            if letter == revealed_letter:
+                                self.answer[index] = revealed_letter
+                        revealed_letters_count += self.word.count(revealed_letter)
+                        break
+                    for index, letter in enumerate(self.word):
+                        if letter == revealed_letter:
+                            self.answer[index] = revealed_letter
+                            revealed_letters_count += self.word.count(revealed_letter)
+                            print(reveal,revealed_letters_count,revealed_letter)
+                            print(self.word)
+                    candidate_letters = candidate_letters.replace(revealed_letter, "")
 
+
+
+
+
+    #        for i in candidate_letters:
+    #            allowed_letter_count.append(self.word.count(i))
+    #        if max(allowed_letter_count) >= 4:
+    #            reveal = 2
+    #        for _ in range(reveal):
+    #            if min(allowed_letter_count) <= 2:
+    #                while self.word.count(revealed_letter) >= 3:
+    #                    revealed_letter = random.choice(candidate_letters)
+    #            else:
+    #                return
+    #            candidate_letters = candidate_letters.replace(revealed_letter, "")
+    #            for index, letter in enumerate(self.word):
+    #                if letter == revealed_letter:
+    #                    self.answer[index] = revealed_letter
+    #                    self.used_letters.append(revealed_letter)
+    #
         self.word_label.setText(" ".join(self.answer))
 
     def guess_letter(self):
